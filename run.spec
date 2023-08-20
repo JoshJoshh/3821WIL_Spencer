@@ -1,12 +1,13 @@
 # -*- mode: python ; coding: utf-8 -*-
 
+path= "C:/Users/Path/to/Project"
 
 block_cipher = None
 added_files = [
-    ( 'C:/Users/User/AppData/Local/Programs/Python/Python311/Lib/site-packages/customtkinter', 'customtkinter/' ),
-    ( 'C:/Users/User/Desktop/WIL/databases', 'databases' ),
-    ( 'C:/Users/User/Desktop/WIL/assets', 'assets' ),
-	( 'C:/Users/User/Desktop/WIL/mapping files', 'mapping files' )
+    ( 'C:/Python310/Lib/site-packages/customtkinter', 'customtkinter/' ),
+    ( path+'/databases', 'databases' ),
+    ( path+'/assets', 'assets' ),
+    ( path+'/mapping files', 'mapping files' )
 ]
 
 a = Analysis(
@@ -42,7 +43,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon='C:/Users/User/Desktop/WIL/app_icon.ico'
+    icon=path+'/app_icon.ico'
 )
 coll = COLLECT(
     exe,
