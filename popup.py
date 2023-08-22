@@ -253,13 +253,16 @@ class selectionScreen(ctk.CTkFrame):
             master.cDB.pack(fill="both", expand=1)
             master.ss.pack_forget()
 
+        self.readme = ctk.CTkLabel(self, text="Welcome to CAEEPR Data Modeler!\nWhat's good homie?")
+        self.readme.place(relx=0.5, y=10, anchor=tk.N)
+
         # Button for the select screen
         self.select = SquareButton(self, text="SELECT DATABASE", command=selectMode)
-        self.select.place(relx=0.27, rely=0.5, relwidth=0.4, relheight=0.9, anchor=tk.CENTER)
+        self.select.place(relx=0.27, rely=0.25, relwidth=0.4, relheight=0.9, anchor=tk.CENTER)
 
         # Button for the create screen
         self.create = SquareButton(self, text="CREATE DATABASE", command=createMode)
-        self.create.place(relx=0.73, rely=0.5, relwidth=0.4, relheight=0.9, anchor=tk.CENTER)
+        self.create.place(relx=0.73, rely=0.25, relwidth=0.4, relheight=0.9, anchor=tk.CENTER)
 
 
 class App(ctk.CTk):

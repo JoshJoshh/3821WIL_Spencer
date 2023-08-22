@@ -90,7 +90,7 @@ class InputData(ctk.CTkFrame):
                     self.dayErrorLabel.configure(text="")
                 else:
                     # If the if statement fails then the number is outside the scope
-                    self.dayErrorLabel.configure(text="Invalid Day")
+                    self.dayErrorLabel.configure(text="Out of Scope")
             except:
                 # If the attempt fails, data is not an integer and is an invalid day
                 self.dayErrorLabel.configure(text="Invalid Day")
@@ -101,7 +101,7 @@ class InputData(ctk.CTkFrame):
                     self.hourErrorLabel.configure(text="")
                 else:
                     # If the if statement fails then the number is outside the scope
-                    self.hourErrorLabel.configure(text="Invalid Hour")
+                    self.hourErrorLabel.configure(text="Out of Scope")
             except:
                 # If the attempt fails, data is not an integer and is an invalid hour
                 self.hourErrorLabel.configure(text="Invalid Hour")
@@ -112,7 +112,7 @@ class InputData(ctk.CTkFrame):
                     self.master.nodeCompare1.nodeErrorLabel.configure(text="")
                 else:
                     # If the if statement fails then the number is outside the scope
-                    self.master.nodeCompare1.nodeErrorLabel.configure(text="Invalid Node")
+                    self.master.nodeCompare1.nodeErrorLabel.configure(text="Out of Scope")
             except:
                 # If the attempt fails, data is not an integer and is an invalid node
                 self.master.nodeCompare1.nodeErrorLabel.configure(text="Invalid Node")
@@ -123,7 +123,7 @@ class InputData(ctk.CTkFrame):
                     self.master.nodeCompare2.nodeErrorLabel.configure(text="")
                 else:
                     # If the if statement fails then the number is outside the scope
-                    self.master.nodeCompare2.nodeErrorLabel.configure(text="Invalid Node")
+                    self.master.nodeCompare2.nodeErrorLabel.configure(text="Out of Scope")
             except:
                 # If the attempt fails, data is not an integer and is an invalid node
                 self.master.nodeCompare2.nodeErrorLabel.configure(text="Invalid Node")
@@ -173,7 +173,7 @@ class OutputData(ctk.CTkFrame):
         self.configure(corner_radius=0, fg_color=gray)
 
         # Node label and dropdown menu
-        self.nodeLabel = ctk.CTkLabel(self, text=f"Node (Max: {nodeLimit - 1})", fg_color=dark_gray, text_color=white)
+        self.nodeLabel = ctk.CTkLabel(self, text=f"Node (1-{nodeLimit - 1})", fg_color=dark_gray, text_color=white)
         self.nodeLabel.place(relx=0.5, rely=0.05, relwidth=1, relheight=0.1, anchor=ctk.CENTER)
         self.nodeErrorLabel = ctk.CTkLabel(self, text="", text_color="red")
         self.nodeErrorLabel.place(relx=0, rely=0.16, relwidth=1)
@@ -401,7 +401,7 @@ class AnimationFrame(ctk.CTkFrame):
         self.errorLabel.place(relx=0.5, rely=0.15, anchor=tk.CENTER)
 
         # The Node Selection Box
-        self.nodeLabel = ctk.CTkLabel(self, text=f"Node (Max: {nodeLimit - 1})")
+        self.nodeLabel = ctk.CTkLabel(self, text=f"Node (1-{nodeLimit - 1})")
         self.nodeLabel.place(relx=0.25, rely=0.04, relwidth=0.4, anchor=tk.CENTER)
         self.nodeDropdown = ctk.CTkComboBox(self, values=nodeList, height=30, command=node_callback, corner_radius=0,
                                             button_color=light_red)
@@ -465,7 +465,7 @@ class GraphFrame(ctk.CTkFrame):
         super().__init__(master, **kwargs)
 
         # The Node Selection Box
-        self.nodeLabel = ctk.CTkLabel(self, text=f"Node (Max: {nodeLimit - 1})")
+        self.nodeLabel = ctk.CTkLabel(self, text=f"Node (1-{nodeLimit - 1})")
         self.nodeLabel.place(relx=0.25, rely=0.04, relwidth=0.4, anchor=tk.CENTER)
         self.nodeDropdown = ctk.CTkComboBox(self, values=nodeList, height=30, corner_radius=0,
                                             button_color=light_red)
@@ -641,6 +641,24 @@ class Mode3(ctk.CTkFrame):
         self.graphFrame.place(relx=0.5, rely=0.5, relwidth=0.94, relheight=0.9, anchor=tk.CENTER)
 
 
+# Main frame for Mode 1 (Tab 1)
+class Mode4(ctk.CTkFrame):
+    # Main frame output for Mode1
+    def __init__(self, master, **kwargs):
+        super().__init__(master, **kwargs)
+        # Compare Node 1
+        self.nodeCompare1 = OutputData(self)
+        self.nodeCompare1.place(relx=0.18, rely=0.5, relwidth=0.3, relheight=0.9, anchor=tk.CENTER)
+
+        # Inputs for queries
+        self.dataInput = InputData(self)
+        self.dataInput.place(relx=0.5, rely=0.5, relwidth=0.3, relheight=0.9, anchor=tk.CENTER)
+
+        # Compare Node 2
+        self.nodeCompare2 = OutputData(self)
+        self.nodeCompare2.place(relx=0.82, rely=0.5, relwidth=0.3, relheight=0.9, anchor=tk.CENTER)
+
+
 class LogoFrame(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
@@ -697,9 +715,11 @@ class Sidebar(ctk.CTkFrame):
             master.mode1.pack(fill="both", expand=1)
             master.mode2.pack_forget()
             master.mode3.pack_forget()
+            master.mode4.pack_forget()
             button1.configure(fg_color=light_red)
             button2.configure(fg_color=red)
             button3.configure(fg_color=red)
+            button5.configure(fg_color=red)
             if master.mode2.animationFrame.controls.animation:
                 master.mode2.animationFrame.controls.activeAnimation()
 
@@ -708,17 +728,33 @@ class Sidebar(ctk.CTkFrame):
             master.mode1.pack_forget()
             master.mode2.pack(fill="both", expand=1)
             master.mode3.pack_forget()
+            master.mode4.pack_forget()
             button1.configure(fg_color=red)
             button2.configure(fg_color=light_red)
             button3.configure(fg_color=red)
+            button5.configure(fg_color=red)
 
         def mode3():
             master.mode1.pack_forget()
             master.mode2.pack_forget()
             master.mode3.pack(fill="both", expand=1)
+            master.mode4.pack_forget()
             button1.configure(fg_color=red)
             button2.configure(fg_color=red)
             button3.configure(fg_color=light_red)
+            button5.configure(fg_color=red)
+            if master.mode2.animationFrame.controls.animation:
+                master.mode2.animationFrame.controls.activeAnimation()
+
+        def mode4():
+            master.mode1.pack_forget()
+            master.mode2.pack_forget()
+            master.mode3.pack_forget()
+            master.mode4.pack(fill="both", expand=1)
+            button1.configure(fg_color=blue)
+            button2.configure(fg_color=blue)
+            button3.configure(fg_color=blue)
+            button5.configure(fg_color=light_red)
             if master.mode2.animationFrame.controls.animation:
                 master.mode2.animationFrame.controls.activeAnimation()
 
@@ -730,15 +766,19 @@ class Sidebar(ctk.CTkFrame):
         # Button to show Mode1
         button1 = SquareButton(self, text="Compare", command=mode1)
         button1.configure(fg_color=light_red)
-        button1.place(relx=0.5, rely=0.3, relwidth=1, relheight=0.1, anchor=tk.CENTER)
+        button1.place(relx=0.5, rely=0.2, relwidth=1, relheight=0.1, anchor=tk.CENTER)
 
         # Button to show Mode2
         button2 = SquareButton(self, text="Animation", command=mode2)
-        button2.place(relx=0.5, rely=0.4, relwidth=1, relheight=0.1, anchor=tk.CENTER)
+        button2.place(relx=0.5, rely=0.3, relwidth=1, relheight=0.1, anchor=tk.CENTER)
 
         # Button to show Mode2
         button3 = SquareButton(self, text="Overview", command=mode3)
-        button3.place(relx=0.5, rely=0.5, relwidth=1, relheight=0.1, anchor=tk.CENTER)
+        button3.place(relx=0.5, rely=0.4, relwidth=1, relheight=0.1, anchor=tk.CENTER)
+
+        # Button to show Mode2
+        button5 = SquareButton(self, text="Edit", command=mode4)
+        button5.place(relx=0.5, rely=0.5, relwidth=1, relheight=0.1, anchor=tk.CENTER)
 
         # Button to return to the popup
         button4 = SquareButton(self, text="Change DB", command=popupLoad)
@@ -802,6 +842,9 @@ class App(ctk.CTkToplevel):
 
         # Initiates Mode3
         self.mode3 = Mode3(self, fg_color=white, corner_radius=0)
+
+        # Initiates Mode4
+        self.mode4 = Mode4(self, fg_color=white, corner_radius=0)
 
         self.sidebarPosition = 0  # Position of the sidebar
         # Button to show the sidebar

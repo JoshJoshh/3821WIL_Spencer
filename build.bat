@@ -1,0 +1,1 @@
+cls && taskkill /f /fi "WINDOWTITLE eq Queensland Energy Market*" && pyinstaller --noconfirm "run.spec" && "dist\run\CAEEPR Data Modeler"
