@@ -161,15 +161,14 @@ class InputData(ctk.CTkFrame):
         self.generationError = ctk.CTkLabel(self, text="", text_color="red")
         self.generationError.place(relx=0.5, rely=0.8, anchor=tk.CENTER)
 
-        if(something):
-            valuesArray=[
-                "one",
-                "two"
-            ]
-            combobox = ctk.CTkComboBox(master, values=valuesArray)
-            combobox.pack(padx=20, pady=10)
-            combobox.set(valuesArray[0])
-            combobox.place(relx=.5, rely=.6, anchor=ctk.CENTER)
+        valuesArray=[
+            "one",
+            "two"
+        ]
+        combobox = ctk.CTkComboBox(master, values=valuesArray)
+        combobox.pack(padx=20, pady=10)
+        combobox.set(valuesArray[0])
+        combobox.place(relx=.5, rely=.6, anchor=ctk.CENTER)
 
         # Hour label and input
         self.generate = RoundButton(self, text="Generate", command=self.generateInfo)
@@ -730,8 +729,6 @@ class Sidebar(ctk.CTkFrame):
             button3.configure(fg_color=red)
             button4.configure(fg_color=red)
             if master.mode2.animationFrame.controls.animation:
-                global something
-                something = False
                 master.mode2.animationFrame.controls.activeAnimation()
 
         # Shows Mode2 and hides Mode1
@@ -767,8 +764,6 @@ class Sidebar(ctk.CTkFrame):
             button3.configure(fg_color=red)
             button4.configure(fg_color=light_red)
             if master.mode2.animationFrame.controls.animation:
-                global something
-                something = TRUE
                 master.mode2.animationFrame.controls.activeAnimation()
 
         # Opens the popup
