@@ -4,6 +4,7 @@ import customtkinter as ctk
 import tkinter as tk
 import backend as back
 import run
+import PIL
 from colours import *
 
 
@@ -237,6 +238,14 @@ class createDB(ctk.CTkFrame):
 
 
 class selectionScreen(ctk.CTkFrame):
+
+    def image(self):
+        # Animates the sidebar
+        if self.master.sidebarPosition >= -0.2:
+            self.master.sidebarPosition -= 0.02
+            self.place(relx=self.master.sidebarPosition, rely=0, relheight=1, relwidth=0.2)
+            self.after(10, self.image)
+
     def __init__(self, master, **kwarg):
         super().__init__(master, **kwarg)
         # Shows the select screen and hides the create screen and the select screen
@@ -253,16 +262,20 @@ class selectionScreen(ctk.CTkFrame):
             master.cDB.pack(fill="both", expand=1)
             master.ss.pack_forget()
 
+        icon = ctk.CTkImage(light_image=PIL.Image.open(os.getcwd() + "/assets/logo.png"), size=(50, 50))
+        self.image = SquareButton(self, text="", width=0, height=0, image=icon, command=self.image)
+        self.image.place(x=0, y=0)
+
         self.readme = ctk.CTkLabel(self, text="Welcome to CAEEPR Data Modeler!\nWhat's good homie?")
         self.readme.place(relx=0.5, y=10, anchor=tk.N)
 
         # Button for the select screen
         self.select = SquareButton(self, text="SELECT DATABASE", command=selectMode)
-        self.select.place(relx=0.27, rely=0.25, relwidth=0.4, relheight=0.9, anchor=tk.CENTER)
+        self.select.place(relx=0.26, rely=0.78, relwidth=0.45, relheight=0.35, anchor=tk.CENTER)
 
         # Button for the create screen
         self.create = SquareButton(self, text="CREATE DATABASE", command=createMode)
-        self.create.place(relx=0.73, rely=0.25, relwidth=0.4, relheight=0.9, anchor=tk.CENTER)
+        self.create.place(relx=0.74, rely=0.78, relwidth=0.45, relheight=0.35, anchor=tk.CENTER)
 
 
 class App(ctk.CTk):

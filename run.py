@@ -161,10 +161,19 @@ class InputData(ctk.CTkFrame):
         self.generationError = ctk.CTkLabel(self, text="", text_color="red")
         self.generationError.place(relx=0.5, rely=0.8, anchor=tk.CENTER)
 
+        if(something):
+            valuesArray=[
+                "one",
+                "two"
+            ]
+            combobox = ctk.CTkComboBox(master, values=valuesArray)
+            combobox.pack(padx=20, pady=10)
+            combobox.set(valuesArray[0])
+            combobox.place(relx=.5, rely=.6, anchor=ctk.CENTER)
+
         # Hour label and input
         self.generate = RoundButton(self, text="Generate", command=self.generateInfo)
         self.generate.place(relx=0.5, rely=0.95, relwidth=0.9, anchor=ctk.CENTER)
-
 
 # The box that contains the Node Selection
 class OutputData(ctk.CTkFrame):
@@ -641,9 +650,9 @@ class Mode3(ctk.CTkFrame):
         self.graphFrame.place(relx=0.5, rely=0.5, relwidth=0.94, relheight=0.9, anchor=tk.CENTER)
 
 
-# Main frame for Mode 1 (Tab 1)
+# Main frame for Mode 4 (Tab 4)
 class Mode4(ctk.CTkFrame):
-    # Main frame output for Mode1
+    # Main frame output for Mode4
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
         # Compare Node 1
@@ -719,8 +728,10 @@ class Sidebar(ctk.CTkFrame):
             button1.configure(fg_color=light_red)
             button2.configure(fg_color=red)
             button3.configure(fg_color=red)
-            button5.configure(fg_color=red)
+            button4.configure(fg_color=red)
             if master.mode2.animationFrame.controls.animation:
+                global something
+                something = False
                 master.mode2.animationFrame.controls.activeAnimation()
 
         # Shows Mode2 and hides Mode1
@@ -732,7 +743,7 @@ class Sidebar(ctk.CTkFrame):
             button1.configure(fg_color=red)
             button2.configure(fg_color=light_red)
             button3.configure(fg_color=red)
-            button5.configure(fg_color=red)
+            button4.configure(fg_color=red)
 
         def mode3():
             master.mode1.pack_forget()
@@ -742,7 +753,7 @@ class Sidebar(ctk.CTkFrame):
             button1.configure(fg_color=red)
             button2.configure(fg_color=red)
             button3.configure(fg_color=light_red)
-            button5.configure(fg_color=red)
+            button4.configure(fg_color=red)
             if master.mode2.animationFrame.controls.animation:
                 master.mode2.animationFrame.controls.activeAnimation()
 
@@ -751,11 +762,13 @@ class Sidebar(ctk.CTkFrame):
             master.mode2.pack_forget()
             master.mode3.pack_forget()
             master.mode4.pack(fill="both", expand=1)
-            button1.configure(fg_color=blue)
-            button2.configure(fg_color=blue)
-            button3.configure(fg_color=blue)
-            button5.configure(fg_color=light_red)
+            button1.configure(fg_color=red)
+            button2.configure(fg_color=red)
+            button3.configure(fg_color=red)
+            button4.configure(fg_color=light_red)
             if master.mode2.animationFrame.controls.animation:
+                global something
+                something = TRUE
                 master.mode2.animationFrame.controls.activeAnimation()
 
         # Opens the popup
@@ -777,12 +790,12 @@ class Sidebar(ctk.CTkFrame):
         button3.place(relx=0.5, rely=0.4, relwidth=1, relheight=0.1, anchor=tk.CENTER)
 
         # Button to show Mode2
-        button5 = SquareButton(self, text="Edit", command=mode4)
-        button5.place(relx=0.5, rely=0.5, relwidth=1, relheight=0.1, anchor=tk.CENTER)
+        button4 = SquareButton(self, text="Edit", command=mode4)
+        button4.place(relx=0.5, rely=0.5, relwidth=1, relheight=0.1, anchor=tk.CENTER)
 
         # Button to return to the popup
-        button4 = SquareButton(self, text="Change DB", command=popupLoad)
-        button4.place(relx=0.5, rely=0.65, relwidth=1, relheight=0.1, anchor=tk.CENTER)
+        button5 = SquareButton(self, text="Change DB", command=popupLoad)
+        button5.place(relx=0.5, rely=0.65, relwidth=1, relheight=0.1, anchor=tk.CENTER)
 
         logo = LogoFrame(self, fg_color=dark_gray)
         logo.place(relx=0.5, rely=0.85, relwidth=0.8, relheight=0.24, anchor=tk.CENTER)
