@@ -161,6 +161,112 @@ class InputData(ctk.CTkFrame):
         self.generationError = ctk.CTkLabel(self, text="", text_color="red")
         self.generationError.place(relx=0.5, rely=0.8, anchor=tk.CENTER)
 
+        # Hour label and input
+        self.generate = RoundButton(self, text="Generate", command=self.generateInfo)
+        self.generate.place(relx=0.5, rely=0.95, relwidth=0.9, anchor=ctk.CENTER)
+
+# The box that contains the input data
+class EditData(ctk.CTkFrame):
+    def stringGenerate(self, data):
+
+        # String generation for the raw data from the backend
+        dataString = ""
+        for key, value in data.items():
+            if isinstance(value, dict):
+                dataString += f"{key}:\n"
+                for subkey, subvalue in value.items():
+                    if isinstance(subvalue, dict):
+                        dataString += f"   {subkey}:\n"
+                        for subsubkey, subsubvalue in subvalue.items():
+                            dataString += f"    {subsubkey}: {subsubvalue}\n"
+                            continue
+                    else:
+                        dataString += f"  {subkey}: {subvalue}\n"
+                        continue
+            else:
+                dataString += f"{key}: {value}\n"
+                continue
+        print(dataString)
+        return dataString
+
+    def generateInfo(self):
+        try:
+            # Attempts to generate and load in the data
+            self.dataGroup1 = back.injection_withdrawal(database_name, int(self.master.nodeCompare1.nodeDropdown.get()),
+                                                        int(self.dayEntry.get()),
+                                                        int(self.hourEntry.get()))
+            self.master.nodeCompare1.textbox.configure(state="normal")
+            self.master.nodeCompare1.textbox.delete("0.0", "end")
+            self.master.nodeCompare1.textbox.insert("0.0", self.stringGenerate(self.dataGroup1))
+            self.master.nodeCompare1.textbox.configure(state="disabled")
+        except Exception as e:
+            # If the generation attempts fails, then it will determine the cause of the issue
+            # Tests if the day is an integer between 0 and 364 days
+            try:
+                if 364 >= int(self.dayEntry.get()) >= 0:
+                    self.dayErrorLabel.configure(text="")
+                else:
+                    # If the if statement fails then the number is outside the scope
+                    self.dayErrorLabel.configure(text="Out of Scope")
+            except:
+                # If the attempt fails, data is not an integer and is an invalid day
+                self.dayErrorLabel.configure(text="Invalid Day")
+
+            # Tests if the hour is an integer between 1 and 48 hours
+            try:
+                if 48 >= int(self.hourEntry.get()) >= 1:
+                    self.hourErrorLabel.configure(text="")
+                else:
+                    # If the if statement fails then the number is outside the scope
+                    self.hourErrorLabel.configure(text="Out of Scope")
+            except:
+                # If the attempt fails, data is not an integer and is an invalid hour
+                self.hourErrorLabel.configure(text="Invalid Hour")
+
+            # Tests if the node is an integer between 1 and the node limit
+            try:
+                if nodeLimit > int(self.master.nodeCompare1.nodeDropdown.get()) >= 1:
+                    self.master.nodeCompare1.nodeErrorLabel.configure(text="")
+                else:
+                    # If the if statement fails then the number is outside the scope
+                    self.master.nodeCompare1.nodeErrorLabel.configure(text="Out of Scope")
+            except:
+                # If the attempt fails, data is not an integer and is an invalid node
+                self.master.nodeCompare1.nodeErrorLabel.configure(text="Invalid Node")
+
+            if str(e).find('"FROM"') > 0:
+                self.generationError.configure(
+                    text="An error has been given.\nLikely mapping file data is missing\nfor one of the given nodes")
+            else:
+                self.generationError.configure(text="")
+
+    def __init__(self, master, **kwargs):
+        super().__init__(master, **kwargs)
+        self.configure(corner_radius=0, fg_color=gray)  # Sets the colour of this object to gray
+
+        # Label for the input
+        self.inputLabel = ctk.CTkLabel(self, text="Input Data", fg_color=dark_gray, text_color=white)
+        self.inputLabel.place(relx=0.5, rely=0.05, relwidth=1, relheight=0.1, anchor=ctk.CENTER)
+
+        # Day label and input
+        self.dayLabel = ctk.CTkLabel(self, text="Day (0-364)")
+        self.dayLabel.place(relx=0.5, rely=0.15, relwidth=0.9, anchor=ctk.CENTER)
+        self.dayEntry = ctk.CTkEntry(self, corner_radius=0)
+        self.dayEntry.place(relx=0.5, rely=0.23, relwidth=0.9, anchor=ctk.CENTER)
+        self.dayErrorLabel = ctk.CTkLabel(self, text="", text_color="red")
+        self.dayErrorLabel.place(relx=0.5, rely=0.3, anchor=tk.CENTER)
+
+        # Hour label and input
+        self.hourLabel = ctk.CTkLabel(self, text="Hour (1-48)")
+        self.hourLabel.place(relx=0.5, rely=0.45, relwidth=0.9, anchor=ctk.CENTER)
+        self.hourEntry = ctk.CTkEntry(self, corner_radius=0)
+        self.hourEntry.place(relx=0.5, rely=0.53, relwidth=0.9, anchor=ctk.CENTER)
+        self.hourErrorLabel = ctk.CTkLabel(self, text="", text_color="red")
+        self.hourErrorLabel.place(relx=0.5, rely=0.6, anchor=tk.CENTER)
+
+        self.generationError = ctk.CTkLabel(self, text="", text_color="red")
+        self.generationError.place(relx=0.5, rely=0.8, anchor=tk.CENTER)
+
         valuesArray=[
             "one",
             "two"
@@ -170,8 +276,11 @@ class InputData(ctk.CTkFrame):
         combobox.set(valuesArray[0])
         combobox.place(relx=.5, rely=.6, anchor=ctk.CENTER)
 
+        self.generate = RoundButton(self, text="Edit", command=self.generateInfo)
+        self.generate.place(relx=0.5, rely=0.85, relwidth=0.9, anchor=ctk.CENTER)
+
         # Hour label and input
-        self.generate = RoundButton(self, text="Generate", command=self.generateInfo)
+        self.generate = RoundButton(self, text="Get Data", command=self.generateInfo)
         self.generate.place(relx=0.5, rely=0.95, relwidth=0.9, anchor=ctk.CENTER)
 
 # The box that contains the Node Selection
@@ -659,12 +768,8 @@ class Mode4(ctk.CTkFrame):
         self.nodeCompare1.place(relx=0.18, rely=0.5, relwidth=0.3, relheight=0.9, anchor=tk.CENTER)
 
         # Inputs for queries
-        self.dataInput = InputData(self)
+        self.dataInput = EditData(self)
         self.dataInput.place(relx=0.5, rely=0.5, relwidth=0.3, relheight=0.9, anchor=tk.CENTER)
-
-        # Compare Node 2
-        self.nodeCompare2 = OutputData(self)
-        self.nodeCompare2.place(relx=0.82, rely=0.5, relwidth=0.3, relheight=0.9, anchor=tk.CENTER)
 
 
 class LogoFrame(ctk.CTkFrame):
