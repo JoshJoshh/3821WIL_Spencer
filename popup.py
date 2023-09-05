@@ -239,12 +239,12 @@ class createDB(ctk.CTkFrame):
 
 class selectionScreen(ctk.CTkFrame):
 
-    def image(self):
-        # Animates the sidebar
-        if self.master.sidebarPosition >= -0.2:
-            self.master.sidebarPosition -= 0.02
-            self.place(relx=self.master.sidebarPosition, rely=0, relheight=1, relwidth=0.2)
-            self.after(10, self.image)
+    def hideMenu(self):
+        if self.imgMag > 0:
+            self.imgPos -= self.imgMag
+            self.image.place(y=self.imgPos)
+            self.imgMag -= .0625
+            self.after(5, self.hideMenu)
 
     def __init__(self, master, **kwarg):
         super().__init__(master, **kwarg)
@@ -262,19 +262,22 @@ class selectionScreen(ctk.CTkFrame):
             master.cDB.pack(fill="both", expand=1)
             master.ss.pack_forget()
 
-        icon = ctk.CTkImage(light_image=PIL.Image.open(os.getcwd() + "/assets/logo.png"), size=(50, 50))
-        self.image = SquareButton(self, text="", width=0, height=0, image=icon, command=self.image)
-        self.image.place(x=0, y=0)
+        self.imgPos = 805
+        self.imgMag = 10
+
+        self.logo = ctk.CTkImage(light_image=PIL.Image.open(os.getcwd() + "/assets/logo.png"), size=(240,240))
+        self.image = ctk.CTkLabel(self, text="", image=self.logo)
+        self.hideMenu()
 
         self.readme = ctk.CTkLabel(self, text="Welcome to CAEEPR Data Modeler!\nWhat's good homie?")
         self.readme.place(relx=0.5, y=10, anchor=tk.N)
 
         # Button for the select screen
-        self.select = SquareButton(self, text="SELECT DATABASE", command=selectMode)
+        self.select = RoundButton(self, text="SELECT DATABASE", command=selectMode)
         self.select.place(relx=0.26, rely=0.78, relwidth=0.45, relheight=0.35, anchor=tk.CENTER)
 
         # Button for the create screen
-        self.create = SquareButton(self, text="CREATE DATABASE", command=createMode)
+        self.create = RoundButton(self, text="CREATE DATABASE", command=createMode)
         self.create.place(relx=0.74, rely=0.78, relwidth=0.45, relheight=0.35, anchor=tk.CENTER)
 
 
