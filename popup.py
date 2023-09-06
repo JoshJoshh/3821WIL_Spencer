@@ -239,12 +239,13 @@ class createDB(ctk.CTkFrame):
 
 class selectionScreen(ctk.CTkFrame):
 
-    def hideMenu(self):
+    def logoMove(self):
         if self.imgMag > 0:
             self.imgPos -= self.imgMag
-            self.image.place(y=self.imgPos)
+            for a in range(4):
+                self.icon[a].place(y=self.imgPos+self.icop[a])
             self.imgMag -= .0625
-            self.after(5, self.hideMenu)
+            self.after(5, self.logoMove)
 
     def __init__(self, master, **kwarg):
         super().__init__(master, **kwarg)
@@ -264,13 +265,21 @@ class selectionScreen(ctk.CTkFrame):
 
         self.imgPos = 805
         self.imgMag = 10
+        #self.logo = ctk.CTkImage(light_image=PIL.Image.open(os.getcwd() + "/assets/logo.png"), size=(240,240))
+        #self.image = ctk.CTkLabel(self, text="", image=self.logo)
+        #self.hideMenu()
 
-        self.logo = ctk.CTkImage(light_image=PIL.Image.open(os.getcwd() + "/assets/logo.png"), size=(240,240))
-        self.image = ctk.CTkLabel(self, text="", image=self.logo)
-        self.hideMenu()
-
-        self.readme = ctk.CTkLabel(self, text="Welcome to CAEEPR Data Modeler!\nWhat's good homie?")
-        self.readme.place(relx=0.5, y=10, anchor=tk.N)
+        self.icop = [20,40,0,10]
+        self.icon = [0,0,0,0]
+        self.icon[0] = CTkButton(self, text="", corner_radius=50, fg_color=red, hover_color=red, width=100, height=100)
+        self.icon[0].place(relx=.5, y=20, anchor=tk.N)
+        self.icon[1] = CTkButton(self, text="", corner_radius=50, fg_color=white, hover_color=white, bg_color=red, width=60, height=60)
+        self.icon[1].place(relx=.5, y=40, anchor=tk.N)
+        self.icon[2] = CTkButton(self, text="", corner_radius=50, fg_color=white, hover_color=white, width=30, height=60)
+        self.icon[2].place(relx=.5, y=0, anchor=tk.N)
+        self.icon[3] = CTkButton(self, text="", corner_radius=50, fg_color=red, hover_color=red, width=15, height=45)
+        self.icon[3].place(relx=.5, y=10, anchor=tk.N)
+        self.logoMove()
 
         # Button for the select screen
         self.select = RoundButton(self, text="SELECT DATABASE", command=selectMode)
@@ -279,6 +288,15 @@ class selectionScreen(ctk.CTkFrame):
         # Button for the create screen
         self.create = RoundButton(self, text="CREATE DATABASE", command=createMode)
         self.create.place(relx=0.74, rely=0.78, relwidth=0.45, relheight=0.35, anchor=tk.CENTER)
+
+        self.readme = ctk.CTkLabel(self, wraplength=240, text="This program is designed to make it easier for the clients from CAEEPR to view and visualise data which they provide in the form of multiple .out files.")
+        self.readme.place(relx=0.5, rely=0.3, anchor=tk.N)
+
+        self.readml = ctk.CTkLabel(self, wraplength=240, text="If the scenario to be analysed has already beed added to the program, click the left side button 'SELECT DATABASE'.")
+        self.readml.place(relx=0.1, rely=0.5, anchor=tk.W)
+
+        self.readmr = ctk.CTkLabel(self, wraplength=240, text="If you wish to analyse a scenario which has not been previously added to the program, click on the right side selection; 'CREATE DATABASE'.")
+        self.readmr.place(relx=0.9, rely=0.5, anchor=tk.E)
 
 
 class App(ctk.CTk):

@@ -186,7 +186,19 @@ class EditData(ctk.CTkFrame):
             else:
                 dataString += f"{key}: {value}\n"
                 continue
-        print(dataString)
+        whathe = dataString.split("\n")
+        self.combobox.destroy()
+        self.valuesArray.clear()
+        for i in range(len(whathe)):
+            if any(a.isdigit() for a in whathe[i]):
+                if "total" not in whathe[i]:
+                    self.valuesArray.append(whathe[i].split(":")[0].replace("  ",""))
+        for i in range(len(self.valuesArray)):
+            print(self.valuesArray[i])
+        self.combobox = ctk.CTkComboBox(self, values=self.valuesArray)
+        self.combobox.pack(padx=20, pady=10)
+        self.combobox.set(self.valuesArray[0])
+        self.combobox.place(relx=.5, rely=.6, anchor=ctk.CENTER)
         return dataString
 
     def generateInfo(self):
@@ -267,14 +279,8 @@ class EditData(ctk.CTkFrame):
         self.generationError = ctk.CTkLabel(self, text="", text_color="red")
         self.generationError.place(relx=0.5, rely=0.8, anchor=tk.CENTER)
 
-        valuesArray=[
-            "one",
-            "two"
-        ]
-        combobox = ctk.CTkComboBox(master, values=valuesArray)
-        combobox.pack(padx=20, pady=10)
-        combobox.set(valuesArray[0])
-        combobox.place(relx=.5, rely=.6, anchor=ctk.CENTER)
+        self.valuesArray=[]
+        self.combobox = ctk.CTkComboBox(master)
 
         self.generate = RoundButton(self, text="Edit", command=self.generateInfo)
         self.generate.place(relx=0.5, rely=0.85, relwidth=0.9, anchor=ctk.CENTER)
