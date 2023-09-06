@@ -167,6 +167,19 @@ class InputData(ctk.CTkFrame):
 
 # The box that contains the input data
 class EditData(ctk.CTkFrame):
+
+    def comboChange(self, string):
+        self.editEntry.destroy()
+        self.editEntry = ctk.CTkEntry(self, corner_radius=0, textvariable=tk.StringVar(
+            value=self.keyArray[self.valuesArray.index(self.combobox.get())]))
+        self.editEntry.place(relx=0.5, rely=0.7, relwidth=0.9, anchor=ctk.CENTER)
+
+    def editInfo(self):
+        if any(a.isdigit() for a in self.editEntry.get()):
+            self.editErrorLabel.configure(text="")
+        else:
+            self.editErrorLabel.configure(text="Invalid Entry")
+
     def stringGenerate(self, data):
 
         # String generation for the raw data from the backend
@@ -189,16 +202,24 @@ class EditData(ctk.CTkFrame):
         whathe = dataString.split("\n")
         self.combobox.destroy()
         self.valuesArray.clear()
+        self.editEntry.destroy()
+        self.keyArray.clear()
+        self.generate.destroy()
         for i in range(len(whathe)):
             if any(a.isdigit() for a in whathe[i]):
                 if "total" not in whathe[i]:
                     self.valuesArray.append(whathe[i].split(":")[0].replace("  ",""))
+                    self.keyArray.append(whathe[i].split(":")[1].replace(" ",""))
         for i in range(len(self.valuesArray)):
             print(self.valuesArray[i])
-        self.combobox = ctk.CTkComboBox(self, values=self.valuesArray)
+        self.editEntry = ctk.CTkEntry(self, corner_radius=0, textvariable=tk.StringVar(value=self.keyArray[0]))
+        self.editEntry.place(relx=0.5, rely=0.7, relwidth=0.9, anchor=ctk.CENTER)
+        self.combobox = ctk.CTkComboBox(self, values=self.valuesArray, command=self.comboChange)
         self.combobox.pack(padx=20, pady=10)
         self.combobox.set(self.valuesArray[0])
         self.combobox.place(relx=.5, rely=.6, anchor=ctk.CENTER)
+        self.generate = RoundButton(self, text="Edit", command=self.editInfo)
+        self.generate.place(relx=0.5, rely=0.85, relwidth=0.9, anchor=ctk.CENTER)
         return dataString
 
     def generateInfo(self):
@@ -263,31 +284,34 @@ class EditData(ctk.CTkFrame):
         # Day label and input
         self.dayLabel = ctk.CTkLabel(self, text="Day (0-364)")
         self.dayLabel.place(relx=0.5, rely=0.15, relwidth=0.9, anchor=ctk.CENTER)
-        self.dayEntry = ctk.CTkEntry(self, corner_radius=0)
+        self.dayEntry = ctk.CTkEntry(self, corner_radius=0, textvariable=tk.StringVar(value="1"))
         self.dayEntry.place(relx=0.5, rely=0.23, relwidth=0.9, anchor=ctk.CENTER)
         self.dayErrorLabel = ctk.CTkLabel(self, text="", text_color="red")
         self.dayErrorLabel.place(relx=0.5, rely=0.3, anchor=tk.CENTER)
 
         # Hour label and input
         self.hourLabel = ctk.CTkLabel(self, text="Hour (1-48)")
-        self.hourLabel.place(relx=0.5, rely=0.45, relwidth=0.9, anchor=ctk.CENTER)
-        self.hourEntry = ctk.CTkEntry(self, corner_radius=0)
-        self.hourEntry.place(relx=0.5, rely=0.53, relwidth=0.9, anchor=ctk.CENTER)
+        self.hourLabel.place(relx=0.5, rely=0.35, relwidth=0.9, anchor=ctk.CENTER)
+        self.hourEntry = ctk.CTkEntry(self, corner_radius=0, textvariable=tk.StringVar(value="1"))
+        self.hourEntry.place(relx=0.5, rely=0.43, relwidth=0.9, anchor=ctk.CENTER)
         self.hourErrorLabel = ctk.CTkLabel(self, text="", text_color="red")
-        self.hourErrorLabel.place(relx=0.5, rely=0.6, anchor=tk.CENTER)
+        self.hourErrorLabel.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
         self.generationError = ctk.CTkLabel(self, text="", text_color="red")
         self.generationError.place(relx=0.5, rely=0.8, anchor=tk.CENTER)
 
         self.valuesArray=[]
+        self.keyArray=[]
         self.combobox = ctk.CTkComboBox(master)
+        self.generate = RoundButton(self)
 
-        self.generate = RoundButton(self, text="Edit", command=self.generateInfo)
-        self.generate.place(relx=0.5, rely=0.85, relwidth=0.9, anchor=ctk.CENTER)
+        self.editEntry = ctk.CTkEntry(self)
+        self.editErrorLabel = ctk.CTkLabel(self, text="", text_color="red")
+        self.editErrorLabel.place(relx=0.5, rely=0.78, anchor=tk.CENTER)
 
         # Hour label and input
-        self.generate = RoundButton(self, text="Get Data", command=self.generateInfo)
-        self.generate.place(relx=0.5, rely=0.95, relwidth=0.9, anchor=ctk.CENTER)
+        self.getData = RoundButton(self, text="Get Data", command=self.generateInfo)
+        self.getData.place(relx=0.5, rely=0.95, relwidth=0.9, anchor=ctk.CENTER)
 
 # The box that contains the Node Selection
 class OutputData(ctk.CTkFrame):
