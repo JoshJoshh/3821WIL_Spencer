@@ -7,6 +7,7 @@ import run
 import PIL
 from colours import *
 
+logo = 0
 
 class confirmDelete(ctk.CTkFrame):
     def __init__(self, master, database, **kwargs):
@@ -242,8 +243,8 @@ class selectionScreen(ctk.CTkFrame):
     def logoMove(self):
         if self.imgMag > 0:
             self.imgPos -= self.imgMag
-            for a in range(len(self.icon)):
-                self.icon[a].place(y=self.imgPos+self.icop[a])
+            for a in range(len(self.image)):
+                self.image[a].place(y=self.imgPos)
             self.imgMag -= .0625
             self.after(5, self.logoMove)
 
@@ -263,24 +264,28 @@ class selectionScreen(ctk.CTkFrame):
             master.cDB.pack(fill="both", expand=1)
             master.ss.pack_forget()
 
+        global logo
+        self.image = [ctk.CTkLabel(self, text="")]
+        if(logo==0):
+            logo = ctk.CTkImage(light_image=PIL.Image.open(os.getcwd() + "/assets/logo.png"), size=(160,160))
+            self.image[0] = ctk.CTkLabel(self, text="", image=logo)
+            self.image[0].place(relx=.5, anchor=tk.N)
+
+        #self.icop = [0,20,40,0,10]
+        #self.icon = [0,0,0,0,0]
+        #self.icon[0] = CTkButton(self, text="", corner_radius=0, fg_color=red, hover_color=red, width=125, height=125)
+        #self.icon[0].place(relx=.5, anchor=tk.N)
+        #self.icon[1] = CTkButton(self, text="", corner_radius=50, fg_color=white, hover_color=white, bg_color=red, width=100, height=100)
+        #self.icon[1].place(relx=.5, anchor=tk.N)
+        #self.icon[2] = CTkButton(self, text="", corner_radius=50, fg_color=red, hover_color=red, width=60, height=60)
+        #self.icon[2].place(relx=.5, anchor=tk.N)
+        #self.icon[3] = CTkButton(self, text="", corner_radius=50, fg_color=red, hover_color=red, bg_color=red, width=30, height=60)
+        #self.icon[3].place(relx=.5, anchor=tk.N)
+        #self.icon[4] = CTkButton(self, text="", corner_radius=50, fg_color=white, hover_color=white, bg_color=red, width=15, height=45)
+        #self.icon[4].place(relx=.5, anchor=tk.N)
+
         self.imgPos = 805
         self.imgMag = 10
-        #self.logo = ctk.CTkImage(light_image=PIL.Image.open(os.getcwd() + "/assets/logo.png"), size=(240,240))
-        #self.image = ctk.CTkLabel(self, text="", image=self.logo)
-        #self.hideMenu()
-
-        self.icop = [0,20,40,0,10]
-        self.icon = [0,0,0,0,0]
-        self.icon[0] = CTkButton(self, text="", corner_radius=0, fg_color=red, hover_color=red, width=125, height=125)
-        self.icon[0].place(relx=.5, anchor=tk.N)
-        self.icon[1] = CTkButton(self, text="", corner_radius=50, fg_color=white, hover_color=white, bg_color=red, width=100, height=100)
-        self.icon[1].place(relx=.5, anchor=tk.N)
-        self.icon[2] = CTkButton(self, text="", corner_radius=50, fg_color=red, hover_color=red, width=60, height=60)
-        self.icon[2].place(relx=.5, anchor=tk.N)
-        self.icon[3] = CTkButton(self, text="", corner_radius=50, fg_color=red, hover_color=red, bg_color=red, width=30, height=60)
-        self.icon[3].place(relx=.5, anchor=tk.N)
-        self.icon[4] = CTkButton(self, text="", corner_radius=50, fg_color=white, hover_color=white, bg_color=red, width=15, height=45)
-        self.icon[4].place(relx=.5, anchor=tk.N)
         self.logoMove()
 
         # Button for the select screen

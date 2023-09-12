@@ -175,7 +175,7 @@ class EditData(ctk.CTkFrame):
         self.editEntry.place(relx=0.5, rely=0.7, relwidth=0.9, anchor=ctk.CENTER)
 
     def editInfo(self):
-        if any(a.isdigit() for a in self.editEntry.get()):
+        if all(a.isdigit() for a in self.editEntry.get()):
             self.editErrorLabel.configure(text="")
         else:
             self.editErrorLabel.configure(text="Invalid Entry")
