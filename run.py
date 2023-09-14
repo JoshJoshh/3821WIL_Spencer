@@ -57,7 +57,6 @@ class InputData(ctk.CTkFrame):
             else:
                 dataString += f"{key}: {value}\n"
                 continue
-        print(dataString)
         return dataString
 
     def generateInfo(self):
@@ -174,11 +173,53 @@ class EditData(ctk.CTkFrame):
             value=self.keyArray[self.valuesArray.index(self.combobox.get())]))
         self.editEntry.place(relx=0.5, rely=0.7, relwidth=0.9, anchor=ctk.CENTER)
 
+    def updataData(self, key, value, data):
+        if type(data) == dict:
+            if key in data:
+                data[key] = type(data[key])(value)
+                return
+            for _ in data:
+                self.updataData(key, value, data[_])
+
     def editInfo(self):
-        if all(a.isdigit() for a in self.editEntry.get()):
+        if all(a.isdigit() or a == "." for a in self.editEntry.get()):
+            self.updataData(self.combobox.get(), self.editEntry.get(), self.dataGroup1)
+            self.master.nodeCompare1.textbox.configure(state="normal")
+            self.master.nodeCompare1.textbox.delete("0.0", "end")
+            self.master.nodeCompare1.textbox.insert("0.0", self.dataFormat(self.dataGroup1))
+            self.master.nodeCompare1.textbox.configure(state="disabled")
+            if not back.write_db(database_name,
+                          int(self.master.nodeCompare1.nodeDropdown.get()),
+                          int(self.dayEntry.get()),
+                          int(self.hourEntry.get()),
+                          self.db_map,
+                          self.combobox.get(),
+                          self.editEntry.get()
+                          ):
+                 self.editErrorLabel.configure(text="Update error")
+                 return
             self.editErrorLabel.configure(text="")
         else:
             self.editErrorLabel.configure(text="Invalid Entry")
+
+    def dataFormat(self, data):
+        dataString = ""
+        for key, value in data.items():
+            if isinstance(value, dict):
+                dataString += f"{key}:\n"
+                for subkey, subvalue in value.items():
+                    if isinstance(subvalue, dict):
+                        dataString += f"   {subkey}:\n"
+                        for subsubkey, subsubvalue in subvalue.items():
+                            dataString += f"    {subsubkey}: {subsubvalue}\n"
+                            continue
+                    else:
+                        dataString += f"  {subkey}: {subvalue}\n"
+                        continue
+            else:
+                dataString += f"{key}: {value}\n"
+                continue
+        return dataString
 
     def stringGenerate(self, data):
 
@@ -227,7 +268,8 @@ class EditData(ctk.CTkFrame):
             # Attempts to generate and load in the data
             self.dataGroup1 = back.injection_withdrawal(database_name, int(self.master.nodeCompare1.nodeDropdown.get()),
                                                         int(self.dayEntry.get()),
-                                                        int(self.hourEntry.get()))
+                                                        int(self.hourEntry.get()),
+                                                        self.db_map)
             self.master.nodeCompare1.textbox.configure(state="normal")
             self.master.nodeCompare1.textbox.delete("0.0", "end")
             self.master.nodeCompare1.textbox.insert("0.0", self.stringGenerate(self.dataGroup1))
@@ -312,6 +354,8 @@ class EditData(ctk.CTkFrame):
         # Hour label and input
         self.getData = RoundButton(self, text="Get Data", command=self.generateInfo)
         self.getData.place(relx=0.5, rely=0.95, relwidth=0.9, anchor=ctk.CENTER)
+
+        self.db_map = {}
 
 # The box that contains the Node Selection
 class OutputData(ctk.CTkFrame):
