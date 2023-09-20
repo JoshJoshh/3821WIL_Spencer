@@ -168,10 +168,23 @@ class InputData(ctk.CTkFrame):
 class EditData(ctk.CTkFrame):
 
     def comboChange(self, string):
+        self.typeBox.destroy()
+        self.typeBox = ctk.CTkComboBox(self, state="readonly", values=["black coal", "NGCC", "OCGT", "wind", "solar", "HYDRO", "PHES", "BESS"])
+        self.typeBox.pack(padx=20, pady=10)
+        self.typeBox.place(relx=.5, rely=.65, anchor=ctk.CENTER)
+        for i in range(len(self.lineArray)):
+            if self.nameArray[self.nameArray.index(self.nameBox.get())] in self.lineArray[i]:
+                break
+            else:
+                if not any(a.isdigit() for a in self.lineArray[i]):
+                    self.typeBox.set(self.lineArray[i].split(":")[0].lstrip())
         self.editEntry.destroy()
         self.editEntry = ctk.CTkEntry(self, corner_radius=0, textvariable=tk.StringVar(
-            value=self.keyArray[self.valuesArray.index(self.combobox.get())]))
-        self.editEntry.place(relx=0.5, rely=0.7, relwidth=0.9, anchor=ctk.CENTER)
+            value=self.nameArray[self.nameArray.index(self.nameBox.get())]))
+        self.editEntry.place(relx=0.5, rely=0.75, relwidth=0.9, anchor=ctk.CENTER)
+        self.generate.destroy()
+        self.generate = RoundButton(self, text="Edit", command=self.editInfo)
+        self.generate.place(relx=0.5, rely=0.85, relwidth=0.9, anchor=ctk.CENTER)
 
     def updataData(self, key, value, data):
         if type(data) == dict:
@@ -182,8 +195,9 @@ class EditData(ctk.CTkFrame):
                 self.updataData(key, value, data[_])
 
     def editInfo(self):
-        if all(a.isdigit() or a == "." for a in self.editEntry.get()):
-            self.updataData(self.combobox.get(), self.editEntry.get(), self.dataGroup1)
+        if all(a.isdigit() for a in self.editEntry.get().replace(".","",1)):
+            """
+            self.updataData(self.nameBox.get(), self.editEntry.get(), self.dataGroup1)
             self.master.nodeCompare1.textbox.configure(state="normal")
             self.master.nodeCompare1.textbox.delete("0.0", "end")
             self.master.nodeCompare1.textbox.insert("0.0", self.dataFormat(self.dataGroup1))
@@ -193,12 +207,13 @@ class EditData(ctk.CTkFrame):
                           int(self.dayEntry.get()),
                           int(self.hourEntry.get()),
                           self.db_map,
-                          self.combobox.get(),
+                          self.nameBox.get(),
                           self.editEntry.get()
                           ):
                  self.editErrorLabel.configure(text="Update error")
                  return
             self.editErrorLabel.configure(text="")
+            """
         else:
             self.editErrorLabel.configure(text="Invalid Entry")
 
@@ -240,27 +255,24 @@ class EditData(ctk.CTkFrame):
             else:
                 dataString += f"{key}: {value}\n"
                 continue
-        whathe = dataString.split("\n")
-        self.combobox.destroy()
-        self.valuesArray.clear()
+        self.lineArray.clear()
+        self.nameArray.clear()
+        self.lineArray = dataString.split("\n")
+        for i in range(len(self.lineArray)):
+            if "injection" in self.lineArray[i]:
+                break
+            else:
+                if any(a.isdigit() for a in self.lineArray[i]):
+                    if "total" not in self.lineArray[i]:
+                       self.nameArray.append(self.lineArray[i].split(":")[0].lstrip())
+        self.nameBox.destroy()
+        self.nameBox = ctk.CTkComboBox(self, state="readonly", values=self.nameArray, command=self.comboChange)
+        self.nameBox.pack(padx=20, pady=10)
+        self.nameBox.set("Select Name")
+        self.nameBox.place(relx=.5, rely=.55, anchor=ctk.CENTER)
+        self.typeBox.destroy()
         self.editEntry.destroy()
-        self.keyArray.clear()
         self.generate.destroy()
-        for i in range(len(whathe)):
-            if any(a.isdigit() for a in whathe[i]):
-                if "total" not in whathe[i]:
-                    self.valuesArray.append(whathe[i].split(":")[0].replace("  ",""))
-                    self.keyArray.append(whathe[i].split(":")[1].replace(" ",""))
-        for i in range(len(self.valuesArray)):
-            print(self.valuesArray[i])
-        self.editEntry = ctk.CTkEntry(self, corner_radius=0, textvariable=tk.StringVar(value=self.keyArray[0]))
-        self.editEntry.place(relx=0.5, rely=0.7, relwidth=0.9, anchor=ctk.CENTER)
-        self.combobox = ctk.CTkComboBox(self, values=self.valuesArray, command=self.comboChange)
-        self.combobox.pack(padx=20, pady=10)
-        self.combobox.set(self.valuesArray[0])
-        self.combobox.place(relx=.5, rely=.6, anchor=ctk.CENTER)
-        self.generate = RoundButton(self, text="Edit", command=self.editInfo)
-        self.generate.place(relx=0.5, rely=0.85, relwidth=0.9, anchor=ctk.CENTER)
         return dataString
 
     def generateInfo(self):
@@ -342,9 +354,10 @@ class EditData(ctk.CTkFrame):
         self.generationError = ctk.CTkLabel(self, text="", text_color="red")
         self.generationError.place(relx=0.5, rely=0.8, anchor=tk.CENTER)
 
-        self.valuesArray=[]
-        self.keyArray=[]
-        self.combobox = ctk.CTkComboBox(master)
+        self.lineArray=[]
+        self.nameArray=[]
+        self.nameBox = ctk.CTkComboBox(master)
+        self.typeBox = ctk.CTkComboBox(master)
         self.generate = RoundButton(self)
 
         self.editEntry = ctk.CTkEntry(self)
