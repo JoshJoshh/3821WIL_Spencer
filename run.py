@@ -167,25 +167,6 @@ class InputData(ctk.CTkFrame):
 # The box that contains the input data
 class EditData(ctk.CTkFrame):
 
-    def comboChange(self, string):
-        self.typeBox.destroy()
-        self.typeBox = ctk.CTkComboBox(self, state="readonly", values=["black coal", "NGCC", "OCGT", "wind", "solar", "HYDRO", "PHES", "BESS"])
-        self.typeBox.pack(padx=20, pady=10)
-        self.typeBox.place(relx=.5, rely=.65, anchor=ctk.CENTER)
-        for i in range(len(self.lineArray)):
-            if self.nameArray[self.nameArray.index(self.nameBox.get())] in self.lineArray[i]:
-                break
-            else:
-                if not any(a.isdigit() for a in self.lineArray[i]):
-                    self.typeBox.set(self.lineArray[i].split(":")[0].lstrip())
-        self.editEntry.destroy()
-        self.editEntry = ctk.CTkEntry(self, corner_radius=0, textvariable=tk.StringVar(
-            value=self.nameArray[self.nameArray.index(self.nameBox.get())]))
-        self.editEntry.place(relx=0.5, rely=0.75, relwidth=0.9, anchor=ctk.CENTER)
-        self.generate.destroy()
-        self.generate = RoundButton(self, text="Edit", command=self.editInfo)
-        self.generate.place(relx=0.5, rely=0.85, relwidth=0.9, anchor=ctk.CENTER)
-
     def updataData(self, key, value, data):
         if type(data) == dict:
             if key in data:
@@ -195,9 +176,10 @@ class EditData(ctk.CTkFrame):
                 self.updataData(key, value, data[_])
 
     def editInfo(self):
-        if all(a.isdigit() for a in self.editEntry.get().replace(".","",1)):
+        if all(a.isalnum() or a in "- _" for a in self.editEntry[0].get())\
+            and len(self.editEntry[0].get().replace(" ","").replace("-","").replace("_","")) != 0:
             """
-            self.updataData(self.nameBox.get(), self.editEntry.get(), self.dataGroup1)
+            self.updataData(self.nameBox[0].get(), self.editEntry[0].get(), self.dataGroup1)
             self.master.nodeCompare1.textbox.configure(state="normal")
             self.master.nodeCompare1.textbox.delete("0.0", "end")
             self.master.nodeCompare1.textbox.insert("0.0", self.dataFormat(self.dataGroup1))
@@ -207,15 +189,50 @@ class EditData(ctk.CTkFrame):
                           int(self.dayEntry.get()),
                           int(self.hourEntry.get()),
                           self.db_map,
-                          self.nameBox.get(),
-                          self.editEntry.get()
+                          self.nameBox[0].get(),
+                          self.editEntry[0].get()
                           ):
                  self.editErrorLabel.configure(text="Update error")
                  return
             self.editErrorLabel.configure(text="")
             """
+            self.editErrorLabel.configure(text="Valid Entry")
+            print("_".join(self.editEntry[0].get().replace("_"," ").split()))
         else:
             self.editErrorLabel.configure(text="Invalid Entry")
+
+    def addInfo(self):
+        if all(a.isalnum() or a in "- _" for a in self.editEntry[1].get())\
+            and len(self.editEntry[1].get().replace(" ","").replace("-","").replace("_","")) != 0:
+            self.addErrorLabel.configure(text="Valid Entry")
+            print("_".join(self.editEntry[1].get().replace("_"," ").split()))
+        else:
+            self.addErrorLabel.configure(text="Invalid Entry")
+
+    def comboChange(self, string, func):
+        self.editEntry[func].destroy()
+        self.editEntry[func] = ctk.CTkEntry(self, corner_radius=0, textvariable=((tk.StringVar(
+            value=self.nameArray[self.nameArray.index(self.nameBox[0].get())])) if func == 0 else ("")))
+        self.editEntry[func].place(relx=self.eep[func][0], rely=self.eep[func][1], relwidth=self.eep[func][2], anchor=ctk.CENTER)
+        if func == 0:
+            self.typeBox[0].destroy()
+            self.typeBox[0] = ctk.CTkComboBox(self, state="readonly", values=["black coal",
+                "NGCC", "OCGT", "wind", "solar", "HYDRO", "PHES", "BESS"])
+            self.typeBox[0].pack(padx=20, pady=10)
+            self.typeBox[0].place(relx=self.tbp[0][0], rely=self.tbp[0][1], anchor=ctk.CENTER)
+            for i in range(len(self.lineArray)):
+                if self.nameArray[self.nameArray.index(self.nameBox[0].get())] in self.lineArray[i]:
+                    break
+                else:
+                    if not any(a.isdigit() for a in self.lineArray[i]):
+                        self.typeBox[0].set(self.lineArray[i].split(":")[0].lstrip())
+            self.editData.destroy()
+            self.editData = RoundButton(self, text="Edit Data", command=self.editInfo)
+            self.editData.place(relx=self.edp[0], rely=self.edp[1], relwidth=self.edp[2], anchor=ctk.CENTER)
+        else:
+            self.addData.destroy()
+            self.addData = RoundButton(self, text="Add Data", command=self.addInfo)
+            self.addData.place(relx=self.adp[0], rely=self.adp[1], relwidth=self.adp[2], anchor=ctk.CENTER)
 
     def dataFormat(self, data):
         dataString = ""
@@ -265,14 +282,24 @@ class EditData(ctk.CTkFrame):
                 if any(a.isdigit() for a in self.lineArray[i]):
                     if "total" not in self.lineArray[i]:
                        self.nameArray.append(self.lineArray[i].split(":")[0].lstrip())
-        self.nameBox.destroy()
-        self.nameBox = ctk.CTkComboBox(self, state="readonly", values=self.nameArray, command=self.comboChange)
-        self.nameBox.pack(padx=20, pady=10)
-        self.nameBox.set("Select Name")
-        self.nameBox.place(relx=.5, rely=.55, anchor=ctk.CENTER)
-        self.typeBox.destroy()
-        self.editEntry.destroy()
-        self.generate.destroy()
+        self.nameBox[0].destroy()
+        self.nameBox[0] = ctk.CTkComboBox(self, state="readonly", values=self.nameArray, command=lambda func=0: self.comboChange(0,0))
+        self.nameBox[1].destroy()
+        self.nameBox[1] = ctk.CTkComboBox(self, state="readonly", values=["black coal",
+            "NGCC", "OCGT", "wind", "solar", "HYDRO", "PHES", "BESS"], command=lambda func=1: self.comboChange(1,1))
+        for a in range(2):
+            self.nameBox[a].pack(padx=20, pady=10)
+            self.nameBox[a].set("Select Name")
+            self.nameBox[a].place(relx=self.nbp[a][0], rely=self.nbp[a][1], anchor=ctk.CENTER)
+            self.typeBox[a].destroy()
+            self.editEntry[a].destroy()
+        self.editData.destroy()
+        self.addData.destroy()
+        self.master.nodeCompare1.nodeErrorLabel.configure(text="")
+        self.hourErrorLabel.configure(text="")
+        self.dayErrorLabel.configure(text="")
+        self.editErrorLabel.configure(text="")
+        self.addErrorLabel.configure(text="")
         return dataString
 
     def generateInfo(self):
@@ -282,10 +309,15 @@ class EditData(ctk.CTkFrame):
                                                         int(self.dayEntry.get()),
                                                         int(self.hourEntry.get()),
                                                         self.db_map)
+            self.dataString=self.stringGenerate(self.dataGroup1)
             self.master.nodeCompare1.textbox.configure(state="normal")
             self.master.nodeCompare1.textbox.delete("0.0", "end")
-            self.master.nodeCompare1.textbox.insert("0.0", self.stringGenerate(self.dataGroup1))
+            self.master.nodeCompare1.textbox.insert("0.0", self.dataString)
             self.master.nodeCompare1.textbox.configure(state="disabled")
+            self.textbox.configure(state="normal")
+            self.textbox.delete("0.0", "end")
+            self.textbox.insert("0.0", self.dataString)
+            self.textbox.configure(state="disabled")
         except Exception as e:
             # If the generation attempts fails, then it will determine the cause of the issue
             # Tests if the day is an integer between 0 and 364 days
@@ -322,52 +354,65 @@ class EditData(ctk.CTkFrame):
                 self.master.nodeCompare1.nodeErrorLabel.configure(text="Invalid Node")
 
             if str(e).find('"FROM"') > 0:
-                self.generationError.configure(
-                    text="An error has been given.\nLikely mapping file data is missing\nfor one of the given nodes")
-            else:
-                self.generationError.configure(text="")
+                self.master.nodeCompare1.nodeErrorLabel.configure(
+                    text="Missing file data")
 
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
         self.configure(corner_radius=0, fg_color=gray)  # Sets the colour of this object to gray
 
+        self.dataString=""
+        self.lineArray=[]
+        self.nameArray=[]
+
         # Label for the input
         self.inputLabel = ctk.CTkLabel(self, text="Input Data", fg_color=dark_gray, text_color=white)
-        self.inputLabel.place(relx=0.5, rely=0.05, relwidth=1, relheight=0.1, anchor=ctk.CENTER)
+        self.inputLabel.place(relx=0.24, rely=0.05, relwidth=.49, relheight=0.1, anchor=ctk.CENTER)
+        self.editLabel = ctk.CTkLabel(self, text="Edit Data", fg_color=dark_gray, text_color=white)
+        self.editLabel.place(relx=0.24, rely=0.55, relwidth=.49, relheight=0.1, anchor=ctk.CENTER)
+        self.outputLabel = ctk.CTkLabel(self, text="Output Data", fg_color=dark_gray, text_color=white)
+        self.outputLabel.place(relx=0.76, rely=0.05, relwidth=.49, relheight=0.1, anchor=ctk.CENTER)
+        self.addLabel = ctk.CTkLabel(self, text="Add Data", fg_color=dark_gray, text_color=white)
+        self.addLabel.place(relx=0.76, rely=0.55, relwidth=.49, relheight=0.1, anchor=ctk.CENTER)
 
         # Day label and input
         self.dayLabel = ctk.CTkLabel(self, text="Day (0-364)")
-        self.dayLabel.place(relx=0.5, rely=0.15, relwidth=0.9, anchor=ctk.CENTER)
+        self.dayLabel.place(relx=0.1, rely=0.14, relwidth=0.19, anchor=ctk.CENTER)
         self.dayEntry = ctk.CTkEntry(self, corner_radius=0, textvariable=tk.StringVar(value="1"))
-        self.dayEntry.place(relx=0.5, rely=0.23, relwidth=0.9, anchor=ctk.CENTER)
+        self.dayEntry.place(relx=0.24, rely=0.21, relwidth=0.43, anchor=ctk.CENTER)
         self.dayErrorLabel = ctk.CTkLabel(self, text="", text_color="red")
-        self.dayErrorLabel.place(relx=0.5, rely=0.3, anchor=tk.CENTER)
+        self.dayErrorLabel.place(relx=0.34, rely=0.14, anchor=tk.CENTER)
 
         # Hour label and input
         self.hourLabel = ctk.CTkLabel(self, text="Hour (1-48)")
-        self.hourLabel.place(relx=0.5, rely=0.35, relwidth=0.9, anchor=ctk.CENTER)
+        self.hourLabel.place(relx=0.1, rely=0.29, relwidth=0.19, anchor=ctk.CENTER)
         self.hourEntry = ctk.CTkEntry(self, corner_radius=0, textvariable=tk.StringVar(value="1"))
-        self.hourEntry.place(relx=0.5, rely=0.43, relwidth=0.9, anchor=ctk.CENTER)
+        self.hourEntry.place(relx=0.24, rely=0.36, relwidth=0.43, anchor=ctk.CENTER)
         self.hourErrorLabel = ctk.CTkLabel(self, text="", text_color="red")
-        self.hourErrorLabel.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+        self.hourErrorLabel.place(relx=0.34, rely=0.29, anchor=tk.CENTER)
 
-        self.generationError = ctk.CTkLabel(self, text="", text_color="red")
-        self.generationError.place(relx=0.5, rely=0.8, anchor=tk.CENTER)
-
-        self.lineArray=[]
-        self.nameArray=[]
-        self.nameBox = ctk.CTkComboBox(master)
-        self.typeBox = ctk.CTkComboBox(master)
-        self.generate = RoundButton(self)
-
-        self.editEntry = ctk.CTkEntry(self)
-        self.editErrorLabel = ctk.CTkLabel(self, text="", text_color="red")
-        self.editErrorLabel.place(relx=0.5, rely=0.78, anchor=tk.CENTER)
-
-        # Hour label and input
+        # def generateInfo
         self.getData = RoundButton(self, text="Get Data", command=self.generateInfo)
-        self.getData.place(relx=0.5, rely=0.95, relwidth=0.9, anchor=ctk.CENTER)
+        self.getData.place(relx=0.24, rely=0.45, relwidth=0.43, anchor=ctk.CENTER)
 
+        # Namebox, typebox and input
+        self.nameBox = [ctk.CTkComboBox(master)]*2
+        self.nbp=[[.18,.64],[.69,.64]]
+        self.typeBox = [ctk.CTkComboBox(master)]*2
+        self.tbp=[[.18,.71],[.69,.71]]
+        self.editEntry = [ctk.CTkEntry(self)]*2
+        self.eep=[[.24,.85,.44],[.75,.85,.44]]
+        self.editErrorLabel = ctk.CTkLabel(self, text="", text_color="red")
+        self.editErrorLabel.place(relx=0.24, rely=0.78, anchor=tk.CENTER)
+        self.addErrorLabel = ctk.CTkLabel(self, text="", text_color="red")
+        self.addErrorLabel.place(relx=0.75, rely=0.78, anchor=tk.CENTER)
+        self.editData = RoundButton(self)
+        self.edp=[.24,.94,.44]
+        self.addData = RoundButton(self)
+        self.adp=[.75,.94,.44]
+
+        self.textbox = ctk.CTkTextbox(self, state="disabled", corner_radius=0)
+        self.textbox.place(relx=0.75, rely=0.3, relwidth=0.45, relheight=0.36, anchor=ctk.CENTER)
         self.db_map = {}
 
 # The box that contains the Node Selection
@@ -856,7 +901,7 @@ class Mode4(ctk.CTkFrame):
 
         # Inputs for queries
         self.dataInput = EditData(self)
-        self.dataInput.place(relx=0.5, rely=0.5, relwidth=0.3, relheight=0.9, anchor=tk.CENTER)
+        self.dataInput.place(relx=0.66, rely=0.5, relwidth=0.625, relheight=0.9, anchor=tk.CENTER)
 
 
 class LogoFrame(ctk.CTkFrame):
