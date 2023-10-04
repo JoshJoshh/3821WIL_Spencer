@@ -91,9 +91,19 @@ The graph initially shows the total energy generated, storage, transmission loss
 
 Checkboxes at the bottom of the window allow the user to filter what is shown in the graph. The boxes can be selected to show more information about the power flow, or deselected to show less information.
 
+#### The 'Edit' window
+##### Description
+The Edit window allows you to modify the mapping files to change a generators name/location and its type. There is also an Add section in this window that allows you to add new generators, to do so, you must supply the desired name/location and generator type. Upon adding a new generator, it will be assigned to the node and day that you have selected. 
+
+##### Usage
+To modify the mapping file data, you must go to the edit section in the menu, enter the node, day and time that you wish to modify, then click the "Get Data" button, which will collect the relevant data and display it on the left side of the program. Doing so will bring up the edit and add sections of the program. 
+
+To edit existing data you must choose which generator you would like to edit, then you will be able to change it's name/location or the generator type.
+
+To add a new generator .......
+
 #### Change DB window
 This window closes the main window, and re-opens the initialisation window.
-
 
 ### Uninstall instructions
 To uninstall the program from your computer, press the windows key and search 'add or remove programs'. From the window this opens, you can search and uninstall the application as normal.
