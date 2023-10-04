@@ -176,30 +176,50 @@ class EditData(ctk.CTkFrame):
                 self.updataData(key, value, data[_])
 
     def editInfo(self):
-        if all(a.isalnum() or a in "- _" for a in self.editEntry[0].get())\
-            and len(self.editEntry[0].get().replace(" ","").replace("-","").replace("_","")) != 0:
-            """
-            self.updataData(self.nameBox[0].get(), self.editEntry[0].get(), self.dataGroup1)
-            self.master.nodeCompare1.textbox.configure(state="normal")
-            self.master.nodeCompare1.textbox.delete("0.0", "end")
-            self.master.nodeCompare1.textbox.insert("0.0", self.dataFormat(self.dataGroup1))
-            self.master.nodeCompare1.textbox.configure(state="disabled")
-            if not back.write_db(database_name,
-                          int(self.master.nodeCompare1.nodeDropdown.get()),
-                          int(self.dayEntry.get()),
-                          int(self.hourEntry.get()),
-                          self.db_map,
-                          self.nameBox[0].get(),
-                          self.editEntry[0].get()
-                          ):
-                 self.editErrorLabel.configure(text="Update error")
-                 return
-            self.editErrorLabel.configure(text="")
-            """
-            self.editErrorLabel.configure(text="Valid Entry")
-            print("_".join(self.editEntry[0].get().replace("_"," ").split()))
+        print("editInfo")
+        print(self.nameBox[0].get())
+        print(self.typeBox[0].get())
+        print(self.editEntry[0].get())
+
+        entry_text = self.editEntry[0].get()
+        if not entry_text.strip():
+            self.editEntry[0].delete(0, "end")
+            self.editEntry[0].insert(0, "Config Error")
+            # self.editEntry[0].tag_add("error", "1.0", "end")
+            # self.editEntry[0].tag_configure("error", foreground="red")
         else:
-            self.editErrorLabel.configure(text="Invalid Entry")
+            self.dataGroup1 = back.update_generator_node(int(self.master.nodeCompare1.nodeDropdown.get()),
+                                                 self.nameBox[0].get(),
+                                                 self.typeBox[0].get(),
+                                                 self.editEntry[0].get())
+
+            # Attempts to generate and load in the data
+            self.generateInfo()
+
+        # if all(a.isalnum() or a in "- _" for a in self.editEntry[0].get())\
+        #     and len(self.editEntry[0].get().replace(" ","").replace("-","").replace("_","")) != 0:
+        #     """
+        #     self.updataData(self.nameBox[0].get(), self.editEntry[0].get(), self.dataGroup1)
+        #     self.master.nodeCompare1.textbox.configure(state="normal")
+        #     self.master.nodeCompare1.textbox.delete("0.0", "end")
+        #     self.master.nodeCompare1.textbox.insert("0.0", self.dataFormat(self.dataGroup1))
+        #     self.master.nodeCompare1.textbox.configure(state="disabled")
+        #     if not back.write_db(database_name,
+        #                   int(self.master.nodeCompare1.nodeDropdown.get()),
+        #                   int(self.dayEntry.get()),
+        #                   int(self.hourEntry.get()),
+        #                   self.db_map,
+        #                   self.nameBox[0].get(),
+        #                   self.editEntry[0].get()
+        #                   ):
+        #          self.editErrorLabel.configure(text="Update error")
+        #          return
+        #     self.editErrorLabel.configure(text="")
+        #     """
+        #     self.editErrorLabel.configure(text="Valid Entry")
+        #     print("_".join(self.editEntry[0].get().replace("_"," ").split()))
+        # else:
+        #     self.editErrorLabel.configure(text="Invalid Entry")
 
     def addInfo(self):
         if all(a.isalnum() or a in "- _" for a in self.editEntry[1].get())\
@@ -310,6 +330,7 @@ class EditData(ctk.CTkFrame):
                                                         int(self.hourEntry.get()),
                                                         self.db_map)
             self.dataString=self.stringGenerate(self.dataGroup1)
+
             self.master.nodeCompare1.textbox.configure(state="normal")
             self.master.nodeCompare1.textbox.delete("0.0", "end")
             self.master.nodeCompare1.textbox.insert("0.0", self.dataString)
