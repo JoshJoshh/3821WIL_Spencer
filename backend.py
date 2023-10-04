@@ -11,6 +11,8 @@ from tqdm import tqdm
 from multiprocessing import Pool, freeze_support
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
+from openpyxl import load_workbook
+
 
 root_folder = os.getcwd()  # Gets the root folder the program is being run from.
 
@@ -477,6 +479,28 @@ def generated_energy(database, node, day, hour, power_flow, db_map):
 
     # Return the generator information
     return power_flow
+
+def update_generator_node(node, name, type, edit):
+
+    katNode = node
+    kname = name.replace(' ', '_')
+    ktype = type.replace(' ', '_')
+    kedit = edit.replace(' ', '_')
+
+    excel_file = "mapping files/generator-node mapping.xlsx"
+    data = pd.read_excel(excel_file, header=None)
+
+    selected_data = data.iloc[1:, 1:4]
+
+    for index, row in selected_data.iterrows():
+        if row[1] == katNode and row[2] == kname:
+            selected_data.at[index, 2] = kedit
+            selected_data.at[index, 3] = ktype
+            break
+
+    data.iloc[1:, 1:4] = selected_data
+
+    data.to_excel("mapping files/generator-node mapping.xlsx", index=False, header=False)
 
 
 def branch_direction(database, node, day, hour, power_flow, db_map):
