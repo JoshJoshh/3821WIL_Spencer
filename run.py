@@ -24,6 +24,9 @@ import pandas as pd
 import popup
 from colours import *
 
+recurse = 0
+reset = 0
+
 folder_path = ""  # Creates a path for the folder of the
 database_name = ""
 database_raw = ""
@@ -167,6 +170,34 @@ class InputData(ctk.CTkFrame):
 # The box that contains the input data
 class EditData(ctk.CTkFrame):
 
+    def outputCheck(self):
+        global reset
+        global recurse
+        if reset != 0:
+            recurse = 0
+        else:
+            self.output=self.lineArray.copy()
+            self.value=":"
+            if self.outputStore != self.editEntry[0].get():
+                for a in range(len(self.output)):
+                    if self.nameArray[self.nameArray.index(self.nameBox[0].get())] in self.output[a]:
+                        self.value+=self.output[a].split(":")[1]
+                        self.output.pop(a)
+                        break
+                for a in range(len(self.output)):
+                    if self.typeArray[self.typeArray.index(self.typeBox[0].get())] in self.output[a]:
+                        self.output.insert(a+2,"    "+self.editEntry[0].get()+self.value)
+                        break
+                    if "injection" in self.output[a]:
+                        self.output.insert(a,"   "+self.typeBox[0].get()+":\n    "+self.editEntry[0].get()+self.value)
+                        break
+                self.textbox.configure(state="normal")
+                self.textbox.delete("0.0", "end")
+                self.textbox.insert("0.0", "\n".join(self.output))
+                self.textbox.configure(state="disabled")
+            self.outputStore = self.editEntry[0].get()
+            self.after(2048, self.outputCheck)
+
     def updataData(self, key, value, data):
         if type(data) == dict:
             if key in data:
@@ -234,10 +265,16 @@ class EditData(ctk.CTkFrame):
         self.editEntry[func] = ctk.CTkEntry(self, corner_radius=0, textvariable=((tk.StringVar(
             value=self.nameArray[self.nameArray.index(self.nameBox[0].get())])) if func == 0 else ("")))
         self.editEntry[func].place(relx=self.eep[func][0], rely=self.eep[func][1], relwidth=self.eep[func][2], anchor=ctk.CENTER)
+        self.outputStore = self.editEntry[0].get()
+        global recurse
+        global reset
+        if recurse == 0:
+            recurse = 1
+            reset = 0
+            self.outputCheck()
         if func == 0:
             self.typeBox[0].destroy()
-            self.typeBox[0] = ctk.CTkComboBox(self, state="readonly", values=["black coal",
-                "NGCC", "OCGT", "wind", "solar", "HYDRO", "PHES", "BESS"])
+            self.typeBox[0] = ctk.CTkComboBox(self, state="readonly", values=self.typeArray)
             self.typeBox[0].pack(padx=20, pady=10)
             self.typeBox[0].place(relx=self.tbp[0][0], rely=self.tbp[0][1], anchor=ctk.CENTER)
             for i in range(len(self.lineArray)):
@@ -302,17 +339,16 @@ class EditData(ctk.CTkFrame):
                 if any(a.isdigit() for a in self.lineArray[i]):
                     if "total" not in self.lineArray[i]:
                        self.nameArray.append(self.lineArray[i].split(":")[0].lstrip())
-        self.nameBox[0].destroy()
-        self.nameBox[0] = ctk.CTkComboBox(self, state="readonly", values=self.nameArray, command=lambda func=0: self.comboChange(0,0))
-        self.nameBox[1].destroy()
-        self.nameBox[1] = ctk.CTkComboBox(self, state="readonly", values=["black coal",
-            "NGCC", "OCGT", "wind", "solar", "HYDRO", "PHES", "BESS"], command=lambda func=1: self.comboChange(1,1))
+        self.arrays = [self.nameArray,self.typeArray,"Select Name","Select Type"]
         for a in range(2):
+            self.nameBox[a].destroy()
+            self.nameBox[a] = ctk.CTkComboBox(self, state="readonly", values=self.arrays[a], command=lambda func=a: self.comboChange(a,a))
             self.nameBox[a].pack(padx=20, pady=10)
-            self.nameBox[a].set("Select Name")
+            self.nameBox[a].set(self.arrays[a+2])
             self.nameBox[a].place(relx=self.nbp[a][0], rely=self.nbp[a][1], anchor=ctk.CENTER)
             self.typeBox[a].destroy()
             self.editEntry[a].destroy()
+        self.nameBox[0].configure(command=lambda func=0: self.comboChange(0,0))
         self.editData.destroy()
         self.addData.destroy()
         self.master.nodeCompare1.nodeErrorLabel.configure(text="")
@@ -338,6 +374,8 @@ class EditData(ctk.CTkFrame):
             self.textbox.delete("0.0", "end")
             self.textbox.insert("0.0", self.dataString)
             self.textbox.configure(state="disabled")
+            global reset
+            reset = 1
         except Exception as e:
             # If the generation attempts fails, then it will determine the cause of the issue
             # Tests if the day is an integer between 0 and 364 days
@@ -384,6 +422,9 @@ class EditData(ctk.CTkFrame):
         self.dataString=""
         self.lineArray=[]
         self.nameArray=[]
+        self.typeArray=["black coal", "NGCC", "OCGT",
+            "wind", "solar", "HYDRO", "PHES", "BESS"]
+        self.outputStore=""
 
         # Label for the input
         self.inputLabel = ctk.CTkLabel(self, text="Input Data", fg_color=dark_gray, text_color=white)
@@ -1025,6 +1066,8 @@ class Sidebar(ctk.CTkFrame):
 
         # Opens the popup
         def popupLoad():
+            global reset
+            reset = 1
             master.withdraw()
             popup.App().reload()
 
