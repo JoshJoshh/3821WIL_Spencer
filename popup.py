@@ -9,6 +9,7 @@ from colours import *
 
 logo = 0
 
+# Confirm deletion of a database
 class confirmDelete(ctk.CTkFrame):
     def __init__(self, master, database, **kwargs):
         super().__init__(master, **kwargs)
@@ -32,6 +33,7 @@ class confirmDelete(ctk.CTkFrame):
         confirmBtn.place(relx=0.75, rely=0.6, anchor=tk.CENTER)
 
 
+# Layout for the delete database screen
 class DBItems(ctk.CTkButton):
     def __init__(self, master, database, **kwargs):
         super().__init__(master, **kwargs)
@@ -47,6 +49,7 @@ class DBItems(ctk.CTkButton):
         deleteBTN.place(relx=0.95,rely=0.5, relwidth=0.1, relheight=1, anchor=tk.CENTER)
 
 
+# Layout for the select database list
 class DBLists(ctk.CTkScrollableFrame):
     # Function to load a folder as a database
     def select_folder(self):
@@ -82,7 +85,7 @@ class DBLists(ctk.CTkScrollableFrame):
         self.search_result = "" # Template value for s
         self.DBs = []
 
-
+# Layout for the select database screen
 class selectDB(ctk.CTkFrame):
     # Shows the Selection Screen
     def ShowSS(self):
@@ -118,6 +121,7 @@ class selectDB(ctk.CTkFrame):
         self.DBlist.place(relx=0.5, rely=0.625, relwidth=0.9, relheight=0.55, anchor=tk.CENTER)
 
 
+# class to create a new database
 class createFrame(ctk.CTkFrame):
     # Selects the folder the user is going to generate the database with
     def selectFolder(self):
@@ -208,7 +212,7 @@ class createFrame(ctk.CTkFrame):
         self.ErrorMSG = ctk.CTkLabel(self, text="", text_color="red")
         self.ErrorMSG.place(relx=0.1, rely=0.9)
 
-
+# Layout for the create database screen
 class createDB(ctk.CTkFrame):
     # Shows the select screen
     def ShowSS(self):
@@ -238,6 +242,7 @@ class createDB(ctk.CTkFrame):
         self.createDBBtn.place(relx=0.5, rely=0.875, anchor=tk.CENTER)
 
 
+# Calss to navigate between screens
 class selectionScreen(ctk.CTkFrame):
 
     def logoMove(self):
@@ -306,6 +311,7 @@ class selectionScreen(ctk.CTkFrame):
         self.readmr.place(relx=0.9, rely=0.5, anchor=tk.E)
 
 
+# Class that the runs the app and closes the popup
 class App(ctk.CTk):
     def reload(self):
         self.deiconify()

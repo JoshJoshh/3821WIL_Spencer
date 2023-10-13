@@ -17,6 +17,7 @@ from openpyxl import load_workbook
 root_folder = os.getcwd()  # Gets the root folder the program is being run from.
 
 
+# Function that allows for the deletion of a database
 def delete_database(database_name):
     """
     Parameters
@@ -39,6 +40,7 @@ def delete_database(database_name):
         print(f"Error: {file_path} : {e.strerror}")
 
 
+# makes the dataframe for pandas
 def make_dataframe(file_path):
     """
     Parameters
@@ -68,6 +70,7 @@ def make_dataframe(file_path):
     return dataframe
 
 
+# Convert .out files to a database
 def convert_files_to_database(folder_path, output_name, progress_callback):
     """
     Parameters
@@ -138,6 +141,7 @@ def convert_files_to_database(folder_path, output_name, progress_callback):
         raise Exception("This folder does not contain any .out files")  # Return an exception
 
 
+# Links the node, day, hour, database and axes together
 def generator_linking(node, day, hour, database, ax):
     """
     Parameters
@@ -480,6 +484,7 @@ def generated_energy(database, node, day, hour, power_flow, db_map):
     # Return the generator information
     return power_flow
 
+# updates the mapping files with the edited data
 def update_generator_node(node, name, type, edit):
 
     katNode = node
@@ -501,6 +506,23 @@ def update_generator_node(node, name, type, edit):
     data.iloc[1:, 1:4] = selected_data
 
     data.to_excel("mapping files/generator-node mapping.xlsx", index=False, header=False)
+
+    file_sorting()
+
+# Sorts the mapping file and updates the index
+def file_sorting():
+    excel_file = "mapping files/generator-node mapping.xlsx"
+    col_names = ["//ID", "atNode", "name", "Technology type"]
+    data = pd.read_excel(excel_file, usecols=col_names, header=1)
+    sorted_data = data.sort_values(by=['Technology type'], ascending = [True])
+    sorted_data = data.sort_values(by=['atNode'], ascending = [True]).reset_index(drop=True)
+
+    sorted_data.index = sorted_data.index + 2  # shifting index
+    sorted_data.loc[0] = ["GenData", " ", " ", " "]  # adding a row
+    sorted_data.loc[1] = ["//ID", "atNode", "name", "Technology type"]  # adding another row
+    sorted_data = sorted_data.sort_index()  # sorting by index
+
+    sorted_data.to_excel("mapping files/generator-node mapping.xlsx", index=False, header=0)
 
 
 def branch_direction(database, node, day, hour, power_flow, db_map):
@@ -909,7 +931,8 @@ def update_graph(df, show, ax):
     ax.yaxis.grid()  # Add a grid
 
 
-def upodate_db(database, sql):
+# Updates the database
+def update_db(database, sql):
     try:
         # Access the database
         conn = sqlite3.connect(database)
@@ -924,35 +947,41 @@ def upodate_db(database, sql):
         return False
 
 
+# Update the energyGenerate file
 def write_db_generated_energy(database, node, day, hour, key, data):
     query = f"UPDATE energyGenerate SET {key}={data} WHERE day={day} AND hour={hour};"
-    return upodate_db(database, query)
+    return update_db(database, query)
 
 
+# Update the branchFlow file
 def write_db_branch_direction(database, node, day, hour, key, data):
     _key, _func = key
     da = _func(data)
     _data = str(da) if "." in data else int(da)
     query = f"UPDATE branchFlow SET {_key}={_data} WHERE day={day} AND hour={hour};"
-    return upodate_db(database, query)
+    return update_db(database, query)
 
 
+# Update the sourceDemandComponent file
 def write_db_source_demand_calculation(database, node, day, hour, key, data):
     query = f"UPDATE sourceDemandComponent SET {key}={data} WHERE day={day} AND hour={hour};"
-    return upodate_db(database, query)
+    return update_db(database, query)
 
 
+# Update the database load calculation
 def write_db_storage_load_calculation(database, node, day, hour, key, data):
     table_name, _key = key
     query = f"UPDATE {table_name} SET {_key}={data} WHERE day={day} AND hour={hour};"
-    return upodate_db(database, query)
+    return update_db(database, query)
 
 
+# Update the transmissionLosses file
 def write_db_transmission_losses_calculation(database, node, day, hour, key, data):
     query = f"UPDATE transmissionLosses SET {key}={data} WHERE day={day} AND hour={hour};"
-    return upodate_db(database, query)
+    return update_db(database, query)
 
 
+# Update database files, run the update file functions
 def write_db(database, node, day, hour, db_map, key, data):
     db_key = ""
     func = ""
@@ -977,7 +1006,7 @@ def write_db(database, node, day, hour, db_map, key, data):
 
 
 # Variables access database in backend testing
-database = r"E:\外包\桐木\3821WIL_Spencer-main\databases\777.db"
+database = r"\databases\777.db"
 database_folder = "databases"
 folder_path = ""
 

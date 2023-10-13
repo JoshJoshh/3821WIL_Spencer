@@ -167,9 +167,10 @@ class InputData(ctk.CTkFrame):
         self.generate = RoundButton(self, text="Generate", command=self.generateInfo)
         self.generate.place(relx=0.5, rely=0.95, relwidth=0.9, anchor=ctk.CENTER)
 
-# The box that contains the input data
+# The box that contains the edit data
 class EditData(ctk.CTkFrame):
 
+    # checks for any changes in the current node and displays it in the output section 
     def outputCheck(self):
         global reset
         global recurse
@@ -198,14 +199,16 @@ class EditData(ctk.CTkFrame):
             self.outputStore = self.editEntry[0].get()
             self.after(2048, self.outputCheck)
 
-    def updataData(self, key, value, data):
+    # is used to update the data when changes are made
+    def updateData(self, key, value, data):
         if type(data) == dict:
             if key in data:
                 data[key] = type(data[key])(value)
                 return
             for _ in data:
-                self.updataData(key, value, data[_])
+                self.updateData(key, value, data[_])
 
+    # used to make changes to the database
     def editInfo(self):
         print("editInfo")
         print(self.nameBox[0].get())
@@ -227,31 +230,7 @@ class EditData(ctk.CTkFrame):
             # Attempts to generate and load in the data
             self.generateInfo()
 
-        # if all(a.isalnum() or a in "- _" for a in self.editEntry[0].get())\
-        #     and len(self.editEntry[0].get().replace(" ","").replace("-","").replace("_","")) != 0:
-        #     """
-        #     self.updataData(self.nameBox[0].get(), self.editEntry[0].get(), self.dataGroup1)
-        #     self.master.nodeCompare1.textbox.configure(state="normal")
-        #     self.master.nodeCompare1.textbox.delete("0.0", "end")
-        #     self.master.nodeCompare1.textbox.insert("0.0", self.dataFormat(self.dataGroup1))
-        #     self.master.nodeCompare1.textbox.configure(state="disabled")
-        #     if not back.write_db(database_name,
-        #                   int(self.master.nodeCompare1.nodeDropdown.get()),
-        #                   int(self.dayEntry.get()),
-        #                   int(self.hourEntry.get()),
-        #                   self.db_map,
-        #                   self.nameBox[0].get(),
-        #                   self.editEntry[0].get()
-        #                   ):
-        #          self.editErrorLabel.configure(text="Update error")
-        #          return
-        #     self.editErrorLabel.configure(text="")
-        #     """
-        #     self.editErrorLabel.configure(text="Valid Entry")
-        #     print("_".join(self.editEntry[0].get().replace("_"," ").split()))
-        # else:
-        #     self.editErrorLabel.configure(text="Invalid Entry")
-
+    # Used to add data to the database
     def addInfo(self):
         if all(a.isalnum() or a in "- _" for a in self.editEntry[1].get())\
             and len(self.editEntry[1].get().replace(" ","").replace("-","").replace("_","")) != 0:
@@ -260,6 +239,7 @@ class EditData(ctk.CTkFrame):
         else:
             self.addErrorLabel.configure(text="Invalid Entry")
 
+    # function that displays and runs the edit and add functions
     def comboChange(self, string, func):
         self.editEntry[func].destroy()
         self.editEntry[func] = ctk.CTkEntry(self, corner_radius=0, textvariable=((tk.StringVar(
@@ -291,6 +271,7 @@ class EditData(ctk.CTkFrame):
             self.addData = RoundButton(self, text="Add Data", command=self.addInfo)
             self.addData.place(relx=self.adp[0], rely=self.adp[1], relwidth=self.adp[2], anchor=ctk.CENTER)
 
+    # function to ensure the data to keeps a consistent format, to avoid errors
     def dataFormat(self, data):
         dataString = ""
         for key, value in data.items():
@@ -923,6 +904,7 @@ class GraphFrame(ctk.CTkFrame):
         return (self.show)
         # print(self.show)  # print the list of checked items
 
+    # saves the data to a .csv file
     def saveCSV(self):
         if isinstance(self.df, pd.DataFrame):
             try:
@@ -943,7 +925,7 @@ class GraphFrame(ctk.CTkFrame):
                 messagebox.showerror('Error',
                                      f'Save failed: \n\nError: {e} \n\nCheck the file is not open, and that you have permission to save in this directory')
 
-
+# Code for the graph page of the program
 class Mode3(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)

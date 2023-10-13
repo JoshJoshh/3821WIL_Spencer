@@ -100,7 +100,7 @@ To modify the mapping file data, you must go to the edit section in the menu, en
 
 To edit existing data you must choose which generator you would like to edit, then you will be able to change it's name/location or the generator type.
 
-To add a new generator .......
+The functionailty to add new data to the program has not been included.
 
 #### Change DB window
 This window closes the main window, and re-opens the initialisation window.
