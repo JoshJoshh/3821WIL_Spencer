@@ -102,6 +102,8 @@ To edit existing data you must choose which generator you would like to edit, th
 
 The functionailty to add new data to the program has not been included.
 
+The output part of the window will show a preview of what the data will look like.
+
 #### Change DB window
 This window closes the main window, and re-opens the initialisation window.
 
